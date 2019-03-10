@@ -5,10 +5,11 @@ from sklearn.tree import DecisionTreeRegressor
 from sklearn.ensemble import RandomForestRegressor, AdaBoostRegressor, GradientBoostingRegressor
 import warnings
 from exp.hyp.search import random_search, grid_search
+from exp.train import train_model
 warnings.filterwarnings("ignore")
 
 
-def run_experiment(alg, alg_params, score_df=None, search_type="random", num_searches=100):
+def run_experiment(X, alg, alg_params, X_test=None, score_df=None, search_type="random", num_searches=100):
     """
     This runs a hyper-parameter search experiment.
 
@@ -62,7 +63,7 @@ def run_experiment(alg, alg_params, score_df=None, search_type="random", num_sea
         # instantiate model from hyper-parameters
         model = alg_cls(**param_search)
         # produce cv score and mad
-        score, mad = train_model(X=X_train_scaled, X_test=X_test_scaled, params=None, model_type='sklearn', model=model)
+        score, mad = train_model(X=X, X_test=X_test, params=None, model_type='sklearn', model=model)
         # generate dataframe row to track alg scores
         df_ = pd.DataFrame(
             {"alg": [alg], "score": [score], "mad": [mad], "params_json": [json.dumps(param_search, sort_keys=True)]})
