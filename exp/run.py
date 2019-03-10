@@ -9,7 +9,7 @@ from exp.train import train_model
 warnings.filterwarnings("ignore")
 
 
-def run_experiment(X, alg, alg_params, X_test=None, score_df=None, search_type="random", num_searches=100):
+def run_experiment(X, Y, alg, alg_params, X_test=None, score_df=None, search_type="random", num_searches=100):
     """
     This runs a hyper-parameter search experiment.
 
@@ -63,7 +63,7 @@ def run_experiment(X, alg, alg_params, X_test=None, score_df=None, search_type="
         # instantiate model from hyper-parameters
         model = alg_cls(**param_search)
         # produce cv score and mad
-        score, mad = train_model(X=X, X_test=X_test, params=None, model_type='sklearn', model=model)
+        score, mad = train_model(X=X, Y=Y, X_test=X_test, params=None, model_type='sklearn', model=model)
         # generate dataframe row to track alg scores
         df_ = pd.DataFrame(
             {"alg": [alg], "score": [score], "mad": [mad], "params_json": [json.dumps(param_search, sort_keys=True)]})
