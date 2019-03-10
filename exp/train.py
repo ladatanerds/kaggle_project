@@ -13,7 +13,7 @@ from sklearn.model_selection import KFold
 warnings.filterwarnings("ignore")
 
 
-def train_model(X, y, X_test=None, n_fold=10, params=None, model_type='lgb', plot_feature_importance=False, model=None):
+def train_model(X, Y, X_test=None, n_fold=10, params=None, model_type='lgb', plot_feature_importance=False, model=None):
     """Taken from the `Earthquakes FE. More features and samples` kaggle notebook"""
     oof = np.zeros(len(X))
     if X_test is not None:
@@ -24,7 +24,7 @@ def train_model(X, y, X_test=None, n_fold=10, params=None, model_type='lgb', plo
     for fold_n, (train_index, valid_index) in enumerate(folds.split(X)):
         print('Fold', fold_n, 'started at', time.ctime())
         X_train, X_valid = X.iloc[train_index], X.iloc[valid_index]
-        y_train, y_valid = y.iloc[train_index], y.iloc[valid_index]
+        y_train, y_valid = Y.iloc[train_index], Y.iloc[valid_index]
 
         if model_type == 'lgb':
             model = lgb.LGBMRegressor(**params, n_estimators=50000, n_jobs=-1)
