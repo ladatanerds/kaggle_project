@@ -1,5 +1,6 @@
 import pandas as pd
 import json
+import os
 import warnings
 from exp.hyp.search import random_search, grid_search
 from exp.train import train_model
@@ -35,12 +36,15 @@ def run_experiment(X, Y, alg, alg_params, n_fold=5, X_test=None, score_df=None, 
         score_df = pd.DataFrame({}, columns=["alg", "score", "mad", "params_json"])
     elif isinstance(score_df, str):
         score_df = pd.read_csv(score_df)
+    if isinstance(save_results, str):
+        if not os.path.exists(save_results):
+            # save `score_df` (including headers) to file if file doesn't exist
+            score_df.to_csv(save_results, index=False)
     # different search options to generate hyper-parameter experiments
     if search_type == "random":
         param_searches = random_search(num_searches=num_searches, **alg_params)
     if search_type == "grid":
         param_searches = grid_search(**alg_params)
-
     # retrieve algorithm
     alg_cls = alg_map[alg]
 
@@ -53,9 +57,9 @@ def run_experiment(X, Y, alg, alg_params, n_fold=5, X_test=None, score_df=None, 
         # generate dataframe row to track alg scores
         df_ = pd.DataFrame(
             {"alg": [alg], "score": [score], "mad": [mad], "params_json": [json.dumps(param_search, sort_keys=True)]})
-        # append to overall dataframe
-        score_df = score_df.append(df_)
         # save to csv file after each search completes
         if isinstance(save_results, str):
-            score_df.to_csv(save_results, index=False)
+            df_.to_csv(save_results, index=False, header=False, mode="a")
+        # append to overall dataframe
+        score_df = score_df.append(df_)
     return score_df
