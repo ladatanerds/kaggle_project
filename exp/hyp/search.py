@@ -1,5 +1,6 @@
 import json
 import warnings
+import numpy as np
 warnings.filterwarnings("ignore")
 
 from random import sample
@@ -36,7 +37,7 @@ def random_search(num_searches=40, **kwargs):
 
     # if num_searches is greater than 80% cartesian product set size, then call grid search instead
     # NOTE: 80% is used so random search doesn't take forever to find a not selected set of hyper-parameter choices
-    cs_prod_len = float(sum([len(val) for val in hyps_vals]))
+    cs_prod_len = float(np.prod([len(val) for val in hyps_vals]))
     if num_searches > .80 * cs_prod_len:
         return grid_search(**kwargs)
     for _ in range(num_searches):
