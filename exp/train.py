@@ -21,6 +21,15 @@ def train_model(X, Y, X_test=None, n_fold=10, params=None, model_type='sklearn',
         prediction = np.zeros(len(X_test))
     scores = []
     feature_importance = pd.DataFrame()
+    if n_fold is None:
+        if model_type == 'sklearn':
+            model = model
+            model.fit(X, Y)
+            if X_test is not None:
+                y_pred = model.predict(X_test).reshape(-1, )
+            return model, y_pred
+        else:
+            raise ValueError("Models not supported")
     folds = KFold(n_splits=n_fold, shuffle=True)
     for fold_n, (train_index, valid_index) in enumerate(folds.split(X)):
         print('Fold', fold_n, 'started at', time.ctime())
