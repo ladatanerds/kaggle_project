@@ -12,7 +12,6 @@ from scipy import stats
 from tqdm import tqdm_notebook
 warnings.filterwarnings("ignore")
 
-
 def add_trend_feature(arr, abs_values=False):
     idx = np.array(range(len(arr)))
     if abs_values:
@@ -208,13 +207,14 @@ def create_train_features(train_file="train.csv"):
     scaler.fit(X_tr)
     X_train_scaled = pd.DataFrame(scaler.transform(X_tr), columns=X_tr.columns)
 
-    return X_train_scaled, y_tr
+    return X_tr, X_train_scaled, y_tr, scaler, classic_sta_lta5_mean_fill, classic_sta_lta7_mean_fill
 
 
-def create_test_features(X_tr, test_dir=".", submission_file="sample_submission.csv"):
+def create_test_features(scaler=None, test_dir="test", submission_file="sample_submission.csv",
+                         classic_sta_lta5_mean_fill=0, classic_sta_lta7_mean_fill=0):
     # read test data
     submission = pd.read_csv(submission_file, index_col='seg_id')
-    X_test = pd.DataFrame(columns=X_tr.columns, dtype=np.float64, index=submission.index)
+    X_test = pd.DataFrame(dtype=np.float64, index=submission.index)
     plt.figure(figsize=(22, 16))
 
     for i, seg_id in enumerate(tqdm_notebook(X_test.index)):
@@ -353,11 +353,8 @@ def create_test_features(X_tr, test_dir=".", submission_file="sample_submission.
             X_test.loc[seg_id, 'abs_max_roll_mean_' + str(windows)] = np.abs(x_roll_mean).max()
 
     # fillna in new columns
-    classic_sta_lta5_mean_fill = X_tr.loc[X_tr['classic_sta_lta5_mean'] != -np.inf, 'classic_sta_lta5_mean'].mean()
-    classic_sta_lta7_mean_fill = X_tr.loc[X_tr['classic_sta_lta7_mean'] != -np.inf, 'classic_sta_lta7_mean'].mean()
     X_test.loc[X_test['classic_sta_lta5_mean'] == -np.inf, 'classic_sta_lta5_mean'] = classic_sta_lta5_mean_fill
     X_test.loc[X_test['classic_sta_lta7_mean'] == -np.inf, 'classic_sta_lta7_mean'] = classic_sta_lta7_mean_fill
 
-    scaler = StandardScaler()
     X_test_scaled = pd.DataFrame(scaler.transform(X_test), columns=X_test.columns)
-    return X_test_scaled
+    return X_test, X_test_scaled

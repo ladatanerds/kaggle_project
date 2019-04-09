@@ -2,9 +2,9 @@ import pandas as pd
 import json
 import os
 import warnings
-from exp.hyp.search import random_search, grid_search
 from exp.train import train_model
 from exp.mappings import alg_map
+from exp.hyp.search import random_search, grid_search
 warnings.filterwarnings("ignore")
 
 
@@ -52,6 +52,8 @@ def run_experiment(X, Y, alg, alg_params, n_fold=5, X_test=None, score_df=None, 
     for param_search in param_searches:
         # instantiate model from hyper-parameters
         model = alg_cls(**param_search)
+        # debug
+        print(param_search)
         # produce cv score and mad
         score, mad = train_model(X=X, Y=Y, X_test=X_test, n_fold=n_fold, params=None, model=model)
         # generate dataframe row to track alg scores
