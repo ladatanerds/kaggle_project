@@ -9,3 +9,4 @@ catboost
 seaborn
 scipy
 statsmodels
+pyyaml
