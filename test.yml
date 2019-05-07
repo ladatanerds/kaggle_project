@@ -1,0 +1,14 @@
+svr:
+  C:
+  - .001
+  - .1
+  - 10.0
+  kernel:
+  - rbf
+etreg:
+  n_estimators:
+  - 5
+  - 10
+  - 15
+  criterion:
+  - mse
